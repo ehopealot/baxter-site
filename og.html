@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<!-- Source for og.png. Not linked from anywhere and noindex'd: it exists so the
+     social card can be re-rendered from the live stylesheet instead of drifting
+     away from the site, which is how the last one ended up two redesigns stale.
+
+     Re-render (Chrome headless works too, but conflicts with a running Comet):
+
+       firefox --headless --screenshot og-2x.png --window-size=2400,1260 \
+               file://$PWD/og.html          # 2x master; 1200,630 for a 1x proof
+       sips -z 630 1200 og-2x.png --out og.png
+
+     Then bump og:image's ?v= in index.html, or scrapers keep serving the cached
+     card. Everything below reuses styles.css, so the card tracks the real site. -->
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>og card source — Baxter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* The card is rendered at a fixed 1200x630, so every viewport-relative value
+     from the page stylesheet is pinned to px here — otherwise a 2x render
+     (2400px wide) resolves the vw terms differently and the card drifts. */
+  html { background: var(--paper); }
+  body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+
+  /* Render at --window-size=1200,630 for a 1x proof and 2400,1260 for the 2x
+     master that gets downsampled to the shipped 1200x630. Firefox ignores
+     layout.css.devPixelsPerPx from a profile pref, so the scale is done here. */
+  @media (min-width: 2000px) { body { zoom: 2; } }
+
+  .og {
+    width: 1200px;
+    height: 630px;
+    padding: 52px 56px;
+    display: flex;
+    align-items: center;
+    border-bottom: none;
+  }
+  .og .hero-grid {
+    width: 100%;
+    max-width: none;
+    padding-inline: 0;
+    grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
+    gap: 54px;
+  }
+
+  /* The wordmark stands in for the topbar, which the card doesn't carry. */
+  .og-mark { display: flex; align-items: center; gap: 0.55rem; }
+  .og-mark .mark-badge { width: 30px; height: 30px; font-size: 0.9rem; }
+  .og-mark .mark-name { font-size: 1.05rem; }
+
+  .og h1 {
+    font-size: 3.3rem;
+    margin-top: 1.4rem;
+  }
+  .og .lede { margin-top: 1.35rem; font-size: 1.06rem; max-width: 30em; }
+  .og .hero-facts { margin-top: 2rem; padding-top: 1.35rem; gap: 0.6rem 1.4rem; }
+
+  /* No animation in a still: freeze the status LED lit. */
+  .og .chat-meta::before { animation: none; }
+</style>
+</head>
+<body>
+  <div class="og hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="og-mark">
+          <span class="mark-badge">B</span>
+          <span class="mark-name">Baxter</span>
+        </div>
+        <h1>Your <em>do-it-all</em> AI&nbsp;assistant.</h1>
+        <p class="lede">
+          Ask in plain language and Baxter goes and does the thing — the research, the
+          reading, the keeping-track of what you care about. Whatever Bax can't do yet,
+          Bax will learn.
+        </p>
+        <ul class="hero-facts">
+          <li><span>Gets better the longer you keep it</span></li>
+          <li><span>Works while you're away</span></li>
+          <li><span>Runs on your own machine</span></li>
+        </ul>
+      </div>
+
+      <div class="chat">
+        <div class="chat-head">
+          <span class="ava ava-b ava-sm">B</span>
+          <span class="chat-name">Baxter</span>
+          <span class="chat-meta">always on</span>
+        </div>
+        <ol class="chat-log">
+          <li class="msg">
+            <span class="ava ava-m">M</span>
+            <div class="msg-body">
+              <p class="msg-h"><b>maya</b><span>9:41 AM</span></p>
+              <p><span class="at">@baxter</span> which of the three laptops in <span class="ref">gear</span> is the best value once you count the RAM upgrade?</p>
+            </div>
+          </li>
+          <li class="msg is-bax">
+            <span class="ava ava-b">B</span>
+            <div class="msg-body">
+              <p class="msg-h"><b>Baxter</b><span>9:41 AM</span></p>
+              <p>The middle one. It's $120 more up front, but its RAM is user-serviceable,
+                so you skip the factory markup and come out ahead by the second year.</p>
+              <p>Math's in <span class="ref">gear</span>.</p>
+            </div>
+          </li>
+          <li class="msg">
+            <span class="ava ava-m">M</span>
+            <div class="msg-body">
+              <p class="msg-h"><b>maya</b><span>9:43 AM</span></p>
+              <p>how did you even get prices off that site? it blocks everything</p>
+            </div>
+          </li>
+          <li class="msg is-bax">
+            <span class="ava ava-b">B</span>
+            <div class="msg-body">
+              <p class="msg-h"><b>Baxter</b><span>9:43 AM</span></p>
+              <p>Worked it out last week and wrote myself a note on how to read their
+                listings. Took one try this time.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
