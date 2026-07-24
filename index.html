@@ -260,8 +260,8 @@
             <div>
               <h3>Install it</h3>
               <p>One line. It checks for Docker, git, and <code>make</code>, clones Baxter,
-                scaffolds <code>app/.env</code>, and puts the <code>baxter</code> CLI on
-                your PATH. Safe to re-run.</p>
+                scaffolds <code>app/.env</code>, puts the <code>baxter</code> CLI on your
+                PATH, and builds the container images. Safe to re-run.</p>
               <pre tabindex="0"><code>curl -fsSL https://bax.bot/install.sh | bash</code></pre>
             </div>
           </li>
@@ -281,9 +281,8 @@ OPENROUTER_MODEL=openai/gpt-4o</code></pre>
             <span class="step-n" aria-hidden="true">03</span>
             <div>
               <h3>Let Bax do the rest</h3>
-              <p>Open a shell and just ask. Now that it can think, Baxter walks you through
-                everything else — the Discord bot token, inviting it to your server — and
-                writes it in for you.</p>
+              <p>Open a shell and just ask. Now that it can think, Baxter helps you get
+                set up.</p>
               <pre tabindex="0"><code>baxter shell</code></pre>
               <div class="term" role="img" aria-label="A terminal session. After you run baxter shell, Baxter says its model is wired up but it can't reach you yet. You ask how to finish setting up. Baxter replies that one thing is left — a Discord bot token so it can reach you — and that once you paste it in, it writes it into app/.env and brings itself up.">
                 <div class="tl"><span class="tp tp-bax">baxter</span><span class="tt">Model's wired up. I just can't reach you yet.</span></div>

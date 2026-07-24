@@ -3,19 +3,20 @@
 #
 #   curl -fsSL https://bax.bot/install.sh | bash
 #
-# It checks prerequisites, clones Baxter, puts the `baxter` CLI on your PATH, and
-# scaffolds app/.env -- then hands off. It does NOT start Baxter (needs a Discord
-# token + a model key you supply) and does NOT install Docker (it checks + points
-# you at the docs). Safe to re-run: an existing Baxter checkout is updated in place,
-# and a filled-in app/.env is never overwritten.
+# It checks prerequisites, clones Baxter, puts the `baxter` CLI on your PATH,
+# scaffolds app/.env, and builds the container images -- then hands off. It does
+# NOT start Baxter (needs a Discord token + a model key you supply) and does NOT
+# install Docker (it checks + points you at the docs). The image build is skipped
+# if the Docker daemon isn't running. Safe to re-run: an existing Baxter checkout
+# is updated in place, and a filled-in app/.env is never overwritten.
 #
 # Install into a custom directory (default ~/baxter):
 #   curl -fsSL https://bax.bot/install.sh | bash -s -- /opt/baxter
 #   BAXTER_DIR=/opt/baxter  curl -fsSL https://bax.bot/install.sh | bash
 #
-# NOTE: this file is `bootstrap.sh` in the repo; bax.bot serves its contents at
-# /install.sh -- re-upload after editing. (The repo's own `install.sh` is a
-# different, post-clone helper that only symlinks the CLI onto PATH.)
+# NOTE: this is the landing repo's `install.sh`, served verbatim at bax.bot/install.sh
+# -- re-upload after editing. Don't confuse it with baxter-ai's OWN install.sh, a
+# different post-clone helper that only symlinks the CLI onto PATH (run at step 3).
 #
 # POSIX sh -- runs the same piped to `bash` or `sh`.
 set -eu
@@ -43,6 +44,9 @@ have() { command -v "$1" >/dev/null 2>&1; }
 main() {
   REPO_URL="https://github.com/ehopealot/baxter-ai.git"
   DEST="${1:-${BAXTER_DIR:-$HOME/baxter}}"
+  # How baxter-ai builds its container images. Both targets depend on check-arch
+  # (needs the daemon) but NOT check-env, so this runs without any keys set.
+  BUILD_CMD="make build-app build-codapi"
   # Never let git block on a credential prompt (a private/typo'd repo would hang a
   # `curl | bash` forever). Fail fast instead, so the die messages below fire.
   export GIT_TERMINAL_PROMPT=0
@@ -59,10 +63,15 @@ main() {
   docker compose version >/dev/null 2>&1 \
     || die "the 'docker compose' v2 plugin is required (found docker, but not compose v2). See https://docs.docker.com/compose/install/"
   ok "docker, docker compose v2, git, make"
-  # The daemon isn't needed to INSTALL (clone/CLI/scaffold), only to `baxter up` --
-  # so warn, don't block, if it isn't reachable right now.
-  docker info >/dev/null 2>&1 \
-    || warn "the docker daemon isn't reachable right now -- start it (or 'colima start', or add your user to the 'docker' group) before 'baxter up'."
+  # Building the images needs the daemon (check-arch reads the daemon's arch);
+  # clone/CLI/scaffold don't. Record whether it's up: if it's down we still
+  # install and just skip the build (step 5) rather than blocking.
+  if docker info >/dev/null 2>&1; then
+    daemon_up=1
+  else
+    daemon_up=0
+    warn "the docker daemon isn't reachable -- I'll skip the image build. Start it (or 'colima start', or add your user to the 'docker' group), then 'baxter up'."
+  fi
 
   # --- 2. clone (or update an existing checkout; never clobber) ---------------
   # A NON-EMPTY dir that isn't Baxter is a clobber hazard; an empty/absent dir is
@@ -95,7 +104,28 @@ main() {
     ok "scaffolded app/.env from the example"
   fi
 
-  # --- 5. next steps ---------------------------------------------------------
+  # --- 5. build the container images (needs the daemon; skip cleanly if down) --
+  # Build only -- never start. Starting needs the Discord token + model key the
+  # user supplies; building doesn't, so doing it here saves a multi-minute wait
+  # on the first `baxter shell` / `baxter up`. Docker's output is noisy, so it's
+  # captured to a log and only surfaced if the build fails (non-fatal: `baxter up`
+  # would rebuild anyway).
+  if [ "$daemon_up" = 1 ]; then
+    step "Building Baxter's images (first run can take a few minutes)"
+    build_log=$(mktemp 2>/dev/null || printf '%s' "${TMPDIR:-/tmp}/baxter-build.$$")
+    if ( cd "$DEST" && $BUILD_CMD ) >"$build_log" 2>&1; then
+      ok "images built"
+      rm -f "$build_log"
+    else
+      warn "the image build didn't finish -- Baxter will build it on your first 'baxter up'. Last lines:"
+      tail -n 12 "$build_log" >&2
+      rm -f "$build_log"
+    fi
+  else
+    warn "skipped the image build -- the Docker daemon isn't running. It'll build on your first 'baxter up'."
+  fi
+
+  # --- 6. next steps ---------------------------------------------------------
   say ""
   step "Baxter is installed at $DEST"
   cat <<EOF
