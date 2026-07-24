@@ -168,8 +168,14 @@ main() {
 ${B}Next steps${Z} -- set one thing, then Baxter takes it from there:
 
   1. Give Baxter a model -- it needs a brain before it can help with anything else.
-     Get an ${B}OpenRouter API key${Z} (https://openrouter.ai, the default) and set
-     ${B}OPENROUTER_API_KEY${Z} in ${B}$DEST/app/.env${Z}.
+     Get an ${B}OpenRouter API key${Z} (https://openrouter.ai, the default), then:
+
+       ${B}baxter set-key openrouter${Z} sk-or-...
+       ${B}baxter harness openrouter${Z} openai/gpt-4o
+
+     Both write to app/.env for you -- no editing by hand. ${B}baxter harness${Z} with
+     no arguments shows what's set, and takes other backends too (claude,
+     openai, custom).
   2. Run ${B}baxter shell${Z} and ask Baxter to finish setting up -- it walks you
      through the Discord bot token and the rest, and writes it in for you.
 
