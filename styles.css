@@ -1,10 +1,10 @@
 /* ============================================================
    Baxter landing page — "Personal computing, 198X"
    Aged manila printout paper, warm terminal ink, and one
-   technical vermilion that reads as the product's "power /
+   earthy moss green that reads as the product's "power /
    always-on" signal. Squared corners and hard offset shadows
    give it the early-home-computer / reference-card feel.
-   The conversation panel — a boxed utility window with a red
+   The conversation panel — a boxed utility window with a green
    status LED — is the signature element.
    ============================================================ */
 
@@ -17,17 +17,17 @@
   --ink-2:      #4A4436;
   --ink-3:      #6B6353;
 
-  --red:        #CC2E22;   /* technical vermilion — brand + "power" signal */
-  --red-deep:   #9E1F16;   /* text-safe red */
-  --red-tint:   #F2D9CF;
-  --red-wash:   #F7E9E1;
+  --green:        #4C7A39;   /* earthy moss green — brand + "power" signal */
+  --green-deep:   #375B22;   /* text-safe green */
+  --green-tint:   #DCE7C9;
+  --green-wash:   #EBF0DE;
 
   --teal:       #2A8B7F;   /* secondary accent — the "reference / code" layer */
   --teal-deep:  #1C6B62;   /* text-safe teal — inline code, links, chips */
   --teal-tint:  #D8E9E4;
 
   /* Brighter tints for speaker/reference text on the dark plate (terminal). */
-  --red-on-dark:  #F0655A;
+  --green-on-dark:  #8FC46B;
   --teal-on-dark: #7FC3B7;
 
   --plate:      #1E1B15;
@@ -83,7 +83,7 @@ a { color: inherit; }
 #main:focus { outline: none; }
 
 :focus-visible {
-  outline: 2px solid var(--red);
+  outline: 2px solid var(--green);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -92,7 +92,7 @@ a { color: inherit; }
   position: absolute;
   left: -9999px;
   top: 0;
-  background: var(--red);
+  background: var(--green);
   color: #fff;
   padding: 0.6rem 1rem;
   font: 600 0.8rem/1 var(--mono);
@@ -172,7 +172,7 @@ h1 {
 }
 h1 em {
   font-style: normal;
-  color: var(--red);
+  color: var(--green);
   white-space: nowrap;   /* keep "do-it-all" from breaking at its hyphens */
 }
 
@@ -196,7 +196,7 @@ p { margin: 0; }
   font: 500 0.72rem/1 var(--mono);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--red-deep);
+  color: var(--green-deep);
 }
 
 /* ── buttons ─────────────────────────────────────────────── */
@@ -220,11 +220,11 @@ p { margin: 0; }
 .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink-rule); }
 
 .btn-solid {
-  background: var(--red);
+  background: var(--green);
   color: #fff;
   font-weight: 600;
 }
-.btn-solid:hover { background: var(--red-deep); }
+.btn-solid:hover { background: var(--green-deep); }
 
 .btn-ghost {
   background: var(--surface);
@@ -274,7 +274,7 @@ p { margin: 0; }
   place-items: center;
   width: 26px; height: 26px;
   border-radius: var(--radius);
-  background: var(--red);
+  background: var(--green);
   color: #fff;
   font: 600 0.85rem/1 var(--mono);
   flex: none;
@@ -298,10 +298,10 @@ p { margin: 0; }
   border-bottom: 2px solid transparent;
   white-space: nowrap;
 }
-.topnav a:hover { color: var(--red-deep); border-bottom-color: var(--red); }
+.topnav a:hover { color: var(--green-deep); border-bottom-color: var(--green); }
 /* Set by app.js as you scroll. Same treatment as :hover, so the page teaches
    one visual language for "this link points at where you are / are going". */
-.topnav a[aria-current] { color: var(--red-deep); border-bottom-color: var(--red); }
+.topnav a[aria-current] { color: var(--green-deep); border-bottom-color: var(--green); }
 
 .topbar-cta { padding: 0.5rem 0.9rem; }
 
@@ -331,6 +331,10 @@ p { margin: 0; }
     margin-inline: calc(var(--pad) * -1);
     padding-inline: var(--pad);
     scrollbar-width: none;
+    /* Fade the right edge so the strip reads as scrollable — the hidden
+       scrollbar otherwise gives no hint that Setup is off-screen. */
+    -webkit-mask-image: linear-gradient(to right, #000 84%, transparent 100%);
+            mask-image: linear-gradient(to right, #000 84%, transparent 100%);
   }
   .topnav::-webkit-scrollbar { width: 0; height: 0; }
 
@@ -397,19 +401,19 @@ p { margin: 0; }
 .hero-facts li::before {
   content: "";
   width: 10px; height: 2px;
-  background: var(--red);
+  background: var(--green);
   flex: none;
 }
 
 /* ── the conversation (signature) ────────────────────────── */
 
-/* A boxed utility window: dark title bar, squared corners, and a hard red
+/* A boxed utility window: dark title bar, squared corners, and a hard green
    offset shadow that reads like registration/overprint on a printed card. */
 .chat {
   background: var(--surface);
   border: 1.5px solid var(--ink-rule);
   border-radius: var(--radius);
-  box-shadow: 7px 7px 0 var(--red);
+  box-shadow: 7px 7px 0 var(--green);
   min-width: 0;
   overflow: hidden;
 }
@@ -421,7 +425,7 @@ p { margin: 0; }
   padding: 0.7rem 1.1rem;
   background: var(--ink);
   color: var(--surface);
-  border-bottom: 2px solid var(--red);
+  border-bottom: 2px solid var(--green);
 }
 .chat-name {
   font-family: var(--mono);
@@ -437,18 +441,18 @@ p { margin: 0; }
   font: 400 0.72rem/1 var(--mono);
   color: rgba(251, 246, 234, 0.62);
 }
-/* The "always on" light. Red = powered / running on your machine. */
+/* The "always on" light. Green = powered / running on your machine. */
 .chat-meta::before {
   content: "";
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--red);
+  background: var(--green-on-dark);
   flex: none;
   animation: led 2.4s ease-in-out infinite;
 }
 @keyframes led {
-  0%, 100% { opacity: 1;    box-shadow: 0 0 6px 0 rgba(204, 46, 34, 0.75); }
-  50%      { opacity: 0.5;  box-shadow: 0 0 1px 0 rgba(204, 46, 34, 0.30); }
+  0%, 100% { opacity: 1;    box-shadow: 0 0 6px 0 rgba(143, 196, 107, 0.75); }
+  50%      { opacity: 0.5;  box-shadow: 0 0 1px 0 rgba(143, 196, 107, 0.30); }
 }
 @media (prefers-reduced-motion: reduce) {
   .chat-meta::before { animation: none; }
@@ -467,7 +471,7 @@ p { margin: 0; }
   padding: 0.55rem 0.7rem;
   border-radius: var(--radius);
 }
-.msg.is-bax { background: var(--red-wash); }
+.msg.is-bax { background: var(--green-wash); }
 
 .ava {
   display: grid;
@@ -480,7 +484,7 @@ p { margin: 0; }
 }
 /* Warm brown, kept dark enough to clear 4.5:1 against white for the initial. */
 .ava-m { background: #6A5F4D; }
-.ava-b { background: var(--red); }
+.ava-b { background: var(--green); }
 .ava-sm { width: 24px; height: 24px; font-size: 0.66rem; }
 
 .msg-body { min-width: 0; }
@@ -543,6 +547,62 @@ p { margin: 0; }
   .hero-grid { grid-template-columns: 1fr; }
 }
 
+/* ── reach / surfaces ────────────────────────────────────── */
+
+/* A dark strip right under the hero: the one line that sets Baxter apart (it
+   brings its own presence, so it never asks for your accounts) plus the channels
+   it shows up on. Dark surface makes the claim the loudest thing after the hero. */
+.reach {
+  background: var(--plate);
+  color: var(--plate-ink);
+  border-bottom: 1.5px solid var(--ink-rule);
+  padding-block: clamp(2.25rem, 4.5vw, 3.5rem);
+}
+.reach-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+.reach-lead {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: clamp(1.2rem, 0.95rem + 1.05vw, 1.7rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  max-width: 28ch;
+}
+.reach-lead em { font-style: normal; color: var(--green-on-dark); }
+.reach-surfaces {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.85rem;
+}
+.reach-sub {
+  font: 500 0.7rem/1 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgba(233, 227, 214, 0.55);
+}
+.surface-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+}
+.surface-list li {
+  font: 500 0.8rem/1 var(--mono);
+  padding: 0.42rem 0.72rem;
+  border: 1px solid rgba(233, 227, 214, 0.30);
+  border-radius: var(--radius);
+}
+.reach-more {
+  font: 400 0.75rem/1 var(--mono);
+  color: var(--green-on-dark);
+}
+
 /* ── band scaffolding ────────────────────────────────────── */
 
 .band {
@@ -562,7 +622,7 @@ p { margin: 0; }
   font: 500 0.72rem/1 var(--mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--red-deep);
+  color: var(--green-deep);
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -572,7 +632,7 @@ p { margin: 0; }
 .tick {
   width: 22px;
   height: 2px;
-  background: var(--red);
+  background: var(--green);
   flex: none;
 }
 
@@ -605,7 +665,7 @@ p { margin: 0; }
   grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
   gap: 2rem 2.5rem;
 }
-/* Open cells, not filled boxes: a short red tick marks each one, the way the
+/* Open cells, not filled boxes: a short green tick marks each one, the way the
    section labels do. Reads as an editorial feature list rather than a grid of
    SaaS product cards. */
 .card { padding: 0; }
@@ -614,7 +674,7 @@ p { margin: 0; }
   display: block;
   width: 28px;
   height: 3px;
-  background: var(--red);
+  background: var(--green);
   margin-bottom: 1.1rem;
 }
 .card h3 { color: var(--ink); }
@@ -677,7 +737,7 @@ p { margin: 0; }
   display: block;
   width: 28px;
   height: 3px;
-  background: var(--red);
+  background: var(--green);
   margin-bottom: 1.1rem;
 }
 .points p {
@@ -704,7 +764,7 @@ p { margin: 0; }
 .steps li:last-child { border-bottom: 1px solid var(--rule); }
 .step-n {
   font: 600 0.85rem/1.4 var(--mono);
-  color: var(--red-deep);
+  color: var(--green-deep);
   letter-spacing: 0.05em;
 }
 .steps p {
@@ -740,7 +800,7 @@ p { margin: 0; }
 /* Terminal transcript: what `baxter shell` actually looks like. Same dark
    surface as the code blocks, but a conversation rather than a command to
    copy — so it's a plain block (no copy button) with prompt-coloured speakers.
-   red = Baxter, teal = you, echoing the palette's roles. */
+   green = Baxter, teal = you, echoing the palette's roles. */
 .term {
   margin-top: 1rem;
   padding: 1rem 1.1rem;
@@ -768,7 +828,7 @@ p { margin: 0; }
   font-weight: 400;
   opacity: 0.5;
 }
-.term .tp-bax { color: var(--red-on-dark); }
+.term .tp-bax { color: var(--green-on-dark); }
 .term .tp-you { color: var(--teal-on-dark); }
 .term .tt-ref { color: var(--teal-on-dark); }
 
@@ -787,7 +847,7 @@ p { margin: 0; }
   font: 500 0.72rem/1 var(--mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--red-deep);
+  color: var(--green-deep);
 }
 /* Same term/description shape as .plate, so it uses the same element. */
 .ops dl {
@@ -884,4 +944,4 @@ p { margin: 0; }
   text-decoration-color: var(--rule);
   text-underline-offset: 0.25em;
 }
-.foot a:hover { color: var(--red-deep); text-decoration-color: var(--red); }
+.foot a:hover { color: var(--green-deep); text-decoration-color: var(--green); }
