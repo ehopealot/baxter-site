@@ -3,12 +3,13 @@
 #
 #   curl -fsSL https://bax.bot/install.sh | bash
 #
-# It checks prerequisites, clones Baxter, puts the `baxter` CLI on your PATH,
-# scaffolds app/.env, and builds the container images -- then hands off. It does
-# NOT start Baxter (needs a Discord token + a model key you supply) and does NOT
-# install Docker (it checks + points you at the docs). The image build is skipped
-# if the Docker daemon isn't running. Safe to re-run: an existing Baxter checkout
-# is updated in place, and a filled-in app/.env is never overwritten.
+# It checks prerequisites, clones Baxter's latest RELEASE (a versioned vX.Y.Z tag,
+# never un-released `main`), puts the `baxter` CLI on your PATH, scaffolds app/.env,
+# and builds the container images -- then hands off. It does NOT start Baxter (needs a
+# Discord token + a model key you supply) and does NOT install Docker (it checks +
+# points you at the docs). The image build is skipped if the Docker daemon isn't
+# running. Safe to re-run: an existing Baxter checkout is updated to the latest
+# release, and a filled-in app/.env is never overwritten.
 #
 # Install into a custom directory (default ~/baxter):
 #   curl -fsSL https://bax.bot/install.sh | bash -s -- /opt/baxter
@@ -36,13 +37,29 @@ warn() { printf '%s\n' "${Y}note:${Z} $*"; }
 die()  { printf '%s\n' "${R}error:${Z} $*" >&2; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
+REPO_URL="https://github.com/ehopealot/baxter-ai.git"
+REPO_SLUG="ehopealot/baxter-ai"
+
+# The latest STABLE release tag (vX.Y.Z) -- so installs track releases, never
+# un-released `main`. Prefers GitHub's Releases API (which already excludes drafts +
+# pre-releases); falls back to the highest semver tag via git, skipping pre-releases
+# (tags with a '-'), when curl or the API is unavailable. Empty if there are none.
+latest_release_tag() {
+  if have curl; then
+    tag=$(curl -fsSL "https://api.github.com/repos/$REPO_SLUG/releases/latest" 2>/dev/null \
+      | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+    [ -n "$tag" ] && { printf '%s' "$tag"; return 0; }
+  fi
+  git ls-remote --tags --refs --sort=-v:refname "$REPO_URL" 'v*' 2>/dev/null \
+    | sed 's#.*refs/tags/##' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1
+}
+
 # Everything that DOES anything lives in main(), invoked on the last line. `curl |
 # bash` streams and executes as bytes arrive, so a dropped connection would run a
 # truncated prefix -- but with the whole body inside a function, bash must parse
 # the entire file before it can call main, so a cut-off download fails to parse and
 # runs NOTHING instead of a half-script. (rustup / nvm / Homebrew do the same.)
 main() {
-  REPO_URL="https://github.com/ehopealot/baxter-ai.git"
   DEST="${1:-${BAXTER_DIR:-$HOME/baxter}}"
   # How baxter-ai builds its container images. Both targets depend on check-arch
   # (needs the daemon) but NOT check-env, so this runs without any keys set.
@@ -79,17 +96,35 @@ main() {
   if [ -e "$DEST" ] && [ -n "$(ls -A "$DEST" 2>/dev/null)" ]; then
     if [ -d "$DEST/.git" ] && git -C "$DEST" remote get-url origin 2>/dev/null | grep -qi 'baxter-ai'; then
       step "Updating the existing checkout at $DEST"
-      git -C "$DEST" pull --ff-only \
-        || die "git pull failed in $DEST (local changes, or the branch diverged). Resolve it there, or move $DEST aside and re-run."
+      git -C "$DEST" fetch --tags --prune --prune-tags --force --quiet origin \
+        || warn "couldn't fetch updates (offline?) -- keeping the current checkout"
+      TAG=$(latest_release_tag)
+      if [ -n "$TAG" ]; then
+        git -C "$DEST" checkout --quiet "$TAG" \
+          || die "couldn't check out release $TAG in $DEST (local changes, or an old shallow clone). Resolve it there, or move $DEST aside and re-run for a fresh clone."
+      else
+        git -C "$DEST" pull --ff-only \
+          || die "git pull failed in $DEST (local changes, or the branch diverged). Resolve it there, or move $DEST aside and re-run."
+      fi
     else
       die "$DEST already exists and isn't a Baxter checkout -- move it aside, or install elsewhere: curl -fsSL https://bax.bot/install.sh | bash -s -- /some/other/dir"
     fi
   else
-    step "Cloning Baxter into $DEST"
-    git clone --depth 1 "$REPO_URL" "$DEST" \
-      || die "git clone failed -- is $REPO_URL public and reachable?"
+    # Full clone (not --depth 1): baxter update switches between release TAGS, which a
+    # shallow clone can't reliably fetch. The extra history is trivial next to the image build.
+    TAG=$(latest_release_tag)
+    if [ -n "$TAG" ]; then
+      step "Cloning Baxter $TAG into $DEST"
+      git clone --branch "$TAG" "$REPO_URL" "$DEST" \
+        || die "git clone of $TAG failed -- is $REPO_URL public and reachable?"
+    else
+      warn "no published release found -- installing the latest main instead."
+      step "Cloning Baxter (main) into $DEST"
+      git clone "$REPO_URL" "$DEST" \
+        || die "git clone failed -- is $REPO_URL public and reachable?"
+    fi
   fi
-  ok "source at $DEST"
+  ok "source at $DEST ($(git -C "$DEST" describe --tags --always 2>/dev/null || echo unknown))"
 
   # --- 3. put the `baxter` CLI on PATH (the repo's own install.sh) -----------
   step "Installing the baxter CLI"
