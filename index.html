@@ -60,8 +60,8 @@
           new, Bax writes a note, so it's there for next time.
         </p>
         <div class="cta-row">
-          <a class="btn btn-solid" href="https://github.com/ehopealot/baxter-ai">View the repo<span aria-hidden="true">&nbsp;↗</span></a>
-          <a class="btn btn-ghost" href="#run">Set Baxter up in four steps</a>
+          <a class="btn btn-solid" href="https://github.com/ehopealot/baxter-ai">See the code<span aria-hidden="true">&nbsp;↗</span></a>
+          <a class="btn btn-ghost" href="#run">Get started</a>
         </div>
         <ul class="hero-facts">
           <li><span>Gets better the longer you keep it</span></li>
@@ -249,28 +249,29 @@
       <div class="band-body">
         <h2 id="run-h">Get up and running.</h2>
         <p class="band-lede">
-          You'll need Docker with compose v2, <code>make</code>, a model API key, and at
-          least one way to reach Bax: a Discord application you control, an inbox, or
-          both.
+          Install Baxter, give it a model to think with, then open a shell — from there
+          Baxter walks you through the rest itself.
         </p>
         <!-- step-n is hidden from assistive tech: the <ol> already numbers these,
-             so exposing it reads as "1, 01, Configure". -->
+             so exposing it reads as "1, 01, Install". -->
         <ol class="steps">
           <li>
             <span class="step-n" aria-hidden="true">01</span>
             <div>
-              <h3>Configure</h3>
-              <p>Copy the example environment file and fill in your keys. Every variable is
-                commented in place.</p>
-              <pre tabindex="0"><code>cp app/.env.example app/.env</code></pre>
+              <h3>Install it</h3>
+              <p>One line. It checks for Docker, git, and <code>make</code>, clones Baxter,
+                scaffolds <code>app/.env</code>, and puts the <code>baxter</code> CLI on
+                your PATH. Safe to re-run.</p>
+              <pre tabindex="0"><code>curl -fsSL https://bax.bot/install.sh | bash</code></pre>
             </div>
           </li>
           <li>
             <span class="step-n" aria-hidden="true">02</span>
             <div>
-              <h3>Give Bax a model</h3>
-              <p>Any model that can call tools will do. The example file already points at
-                a sensible one.</p>
+              <h3>Pick a model</h3>
+              <p>Give Baxter a brain — any model that can call tools works, and OpenRouter
+                is the default. It's the one thing you set by hand, since Baxter needs a
+                model before it can help with the rest.</p>
               <pre tabindex="0"><code><span class="c"># app/.env</span>
 OPENROUTER_API_KEY=sk-or-...
 OPENROUTER_MODEL=openai/gpt-4o</code></pre>
@@ -279,29 +280,16 @@ OPENROUTER_MODEL=openai/gpt-4o</code></pre>
           <li>
             <span class="step-n" aria-hidden="true">03</span>
             <div>
-              <h3>Pick how to reach Bax</h3>
-              <p>For <b>Discord</b>, create an application in the
-                <a href="https://discord.com/developers/applications">developer
-                portal<span aria-hidden="true">&nbsp;↗</span></a>, enable the Message Content
-                intent, then invite the bot to your server.</p>
-              <pre tabindex="0"><code><span class="c"># app/.env</span>
-DISCORD_BOT_TOKEN=</code></pre>
-              <p>For <b>email</b>, add an AgentMail key and run <code>make inbox</code> once.
-                It creates Baxter's inbox and prints the two values to paste back. Then list the
-                addresses allowed to write to Bax. Leave that empty and Baxter answers nobody.</p>
-              <pre tabindex="0"><code><span class="c"># app/.env</span>
-AGENTMAIL_API_KEY=
-ALLOWED_SENDERS=you@example.com</code></pre>
-            </div>
-          </li>
-          <li>
-            <span class="step-n" aria-hidden="true">04</span>
-            <div>
-              <h3>Bring Bax up</h3>
-              <p>Install the CLI once, then start it. Baxter's live as soon as it connects.
-                Use <code>baxter up mail</code> instead to start the inbox watcher
-                alongside Discord.</p>
-              <pre tabindex="0"><code>./install.sh &amp;&amp; baxter up</code></pre>
+              <h3>Let Bax do the rest</h3>
+              <p>Open a shell and just ask. Now that it can think, Baxter walks you through
+                everything else — the Discord bot token, inviting it to your server — and
+                writes it in for you.</p>
+              <pre tabindex="0"><code>baxter shell</code></pre>
+              <div class="term" role="img" aria-label="A terminal session. After you run baxter shell, Baxter says its model is wired up but it can't reach you yet. You ask how to finish setting up. Baxter replies that one thing is left — a Discord bot token so it can reach you — and that once you paste it in, it writes it into app/.env and brings itself up.">
+                <div class="tl"><span class="tp tp-bax">baxter</span><span class="tt">Model's wired up. I just can't reach you yet.</span></div>
+                <div class="tl"><span class="tp tp-you">you</span><span class="tt">how do I finish setting up?</span></div>
+                <div class="tl"><span class="tp tp-bax">baxter</span><span class="tt">One thing left: a Discord bot token so I can reach you. I'll walk you to it — paste it here and I'll write it into <span class="tt-ref">app/.env</span> and bring myself up.</span></div>
+              </div>
             </div>
           </li>
         </ol>
