@@ -877,7 +877,7 @@ p { margin: 0; }
 .close {
   padding-block: clamp(4rem, 8vw, 7rem);
   background: var(--paper);
-  text-align: center;
+  text-align: left;
 }
 .close-inner p {
   margin-top: 1rem;
