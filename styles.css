@@ -124,7 +124,7 @@ code, pre { font-family: var(--mono); }
 /* Without JS there's no wrapper and the <pre> carries its own top gap. With
    it, that gap moves up to the wrapper so the button sits inside the spacing
    rather than being pushed away from its own code block. */
-.steps .snip { margin-top: 1rem; }
+.steps .snip { margin-top: 0rem; }
 .steps .snip pre { margin-top: 0; }
 
 .copy {
@@ -802,7 +802,6 @@ p { margin: 0; }
    copy — so it's a plain block (no copy button) with prompt-coloured speakers.
    green = Baxter, teal = you, echoing the palette's roles. */
 .term {
-  margin-top: 1rem;
   padding: 1rem 1.1rem;
   background: var(--plate);
   color: var(--plate-ink);
