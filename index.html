@@ -242,6 +242,8 @@
                 is the default. Two commands: drop in a key, name a model. It's the one
                 thing you set by hand, since Baxter needs a model before it can help with
                 the rest.</p>
+	      <p>Alternatively, you can skip to step 3 for now if you have
+		<a href="https://ollama.com">ollama</a> installed.</p>
               <pre tabindex="0"><code>baxter set-key openrouter sk-or-...
 baxter harness openrouter openai/gpt-4o</code></pre>
               <p>Both write to <code>app/.env</code> for you, and the key is never echoed
@@ -259,6 +261,8 @@ baxter harness openrouter openai/gpt-4o</code></pre>
               <p>Open a shell and just ask. Now that it can think, Baxter helps you get
                 set up.</p>
               <pre tabindex="0"><code>baxter shell</code></pre>
+	      <p>Or, if you skipped step 2 and have Ollama installed and prefer a local model to walk you through setup.</p>
+              <pre tabindex="0"><code>baxter shell ollama</code></pre>
               <div class="term" role="img" aria-label="A terminal session. After you run baxter shell, Baxter says its model is wired up but it can't reach you yet. You ask how to finish setting up. Baxter replies that one thing is left — a Discord bot token so it can reach you — and that once you paste it in, it writes it into app/.env and brings itself up.">
                 <div class="tl"><span class="tp tp-bax">baxter</span><span class="tt">Model's wired up. I just can't reach you yet.</span></div>
                 <div class="tl"><span class="tp tp-you">you</span><span class="tt">how do I finish setting up?</span></div>
