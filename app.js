@@ -1,9 +1,15 @@
-/* Conversation reveal: plays the exchange through once on load.
-   The markup is complete without JS. The staging class is only added
-   here, so a failed script or a reduced-motion preference just shows
-   the finished conversation. */
+/* Conversation reveal: plays the exchange through once when the panel is
+   in view. Each Baxter reply is preceded by an in-place typing indicator
+   (three dots overlaying the message text), so the panel's box stays
+   reserved from the start and never resizes as messages arrive.
+
+   Safety: the markup is complete without JS. The script is the only thing
+   that adds .is-staged (which hides the messages) and the typing dots;
+   reduced motion and no-JS both leave the full conversation on screen.
+   The chat is role="img" with a full transcript in its label, so the
+   staging never affects screen readers. */
 (function () {
-  var log = document.getElementById("chat-log");
+  var log = document.querySelector("#chat-log");
   if (!log) return;
 
   var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -11,21 +17,70 @@
 
   var msgs = Array.prototype.slice.call(log.querySelectorAll(".msg"));
   if (!msgs.length) return;
-
   log.classList.add("is-staged");
 
-  var i = 0;
-  function step() {
-    if (i >= msgs.length) return;
-    var msg = msgs[i++];
-    msg.classList.add("is-in");
-    // Longer beat before Baxter answers than before a human's short reply:
-    // an instant response reads as canned rather than considered.
-    var next = msg.classList.contains("is-bax") ? 900 : 650;
-    window.setTimeout(step, next);
+  function makeDots() {
+    var s = document.createElement("span");
+    s.className = "typing-dots";
+    s.setAttribute("aria-hidden", "true");
+    s.append(
+      document.createElement("i"),
+      document.createElement("i"),
+      document.createElement("i"),
+    );
+    return s;
   }
 
-  window.setTimeout(step, 300);
+  // For each Baxter reply, drop the dots inside its msg-body as an absolute
+  // overlay covering the text area. The <p>s keep their text in flow (color
+  // hidden while typing, so the box matches the final reply), and the dots
+  // sit on top. Result: the row's height is the same during typing and after
+  // the reply, so the panel never grows or shrinks.
+  msgs.forEach(function (m) {
+    if (m.classList.contains("is-bax")) {
+      var body = m.querySelector(".msg-body");
+      if (body) body.append(makeDots());
+      m.classList.add("is-typing");
+    }
+  });
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  async function play() {
+    await wait(300);
+    for (var i = 0; i < msgs.length; i++) {
+      var m = msgs[i];
+
+      // Row enters the panel. For Baxter this happens with the typing state
+      // active, so the row arrives as "Baxter is typing".
+      m.classList.add("is-in");
+
+      if (m.classList.contains("is-bax")) {
+        await wait(900); // the typing beat
+        m.classList.remove("is-typing"); // text fades in, dots fade out
+        await wait(300); // let the reply settle before the next row
+        // After Baxter's first reply, a longer beat so the reader appears to
+        // take it in before following up.
+        if (i === 1) await wait(850);
+      } else {
+        await wait(650);
+      }
+    }
+  }
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) {
+        io.disconnect();
+        play();
+      }
+    }, { threshold: 0.35 });
+    io.observe(log);
+  } else {
+    play();
+  }
 })();
 
 /* Marks the nav link for whichever section you're currently reading. Nothing

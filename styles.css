@@ -1,11 +1,11 @@
 /* ============================================================
-   Baxter landing page — "Personal computing, 198X"
+   Baxter landing page: "Personal computing, 198X"
    Aged manila printout paper, warm terminal ink, and one
    earthy moss green that reads as the product's "power /
    always-on" signal. Squared corners and hard offset shadows
    give it the early-home-computer / reference-card feel.
-   The conversation panel — a boxed utility window with a green
-   status LED — is the signature element.
+   The conversation panel (a boxed utility window with a green
+   status LED) is the signature element.
    ============================================================ */
 
 :root {
@@ -17,13 +17,13 @@
   --ink-2:      #4A4436;
   --ink-3:      #6B6353;
 
-  --green:        #4C7A39;   /* earthy moss green — brand + "power" signal */
+  --green:        #4C7A39;   /* earthy moss green: brand + "power" signal */
   --green-deep:   #375B22;   /* text-safe green */
   --green-tint:   #DCE7C9;
   --green-wash:   #EBF0DE;
 
-  --teal:       #2A8B7F;   /* secondary accent — the "reference / code" layer */
-  --teal-deep:  #1C6B62;   /* text-safe teal — inline code, links, chips */
+  --teal:       #2A8B7F;   /* secondary accent, the "reference / code" layer */
+  --teal-deep:  #1C6B62;   /* text-safe teal: inline code, links, chips */
   --teal-tint:  #D8E9E4;
 
   /* Brighter tints for speaker/reference text on the dark plate (terminal). */
@@ -47,7 +47,7 @@
      when the nav wraps to its own row below 900px. */
   --topbar-h: 64px;
   --tr: 0.16s ease;
-  --radius: 2px;   /* squared off — the retro-UI tell */
+  --radius: 2px;   /* squared off, the retro-UI tell */
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -76,6 +76,11 @@ body {
 }
 
 a { color: inherit; }
+
+::selection {
+  background: var(--green);
+  color: #fff;
+}
 
 /* Target of both the skip link and the wordmark, so it gets the same clearance
    the bands do. */
@@ -164,20 +169,20 @@ h1, h2, h3 {
 }
 
 h1 {
-  font-weight: 600;
-  font-size: clamp(2.1rem, 1.4rem + 2.7vw, 3.35rem);
-  line-height: 1.04;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: clamp(2.1rem, 1.3rem + 3.4vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
   margin-block: 0.6rem 0;
 }
 h1 em {
   font-style: normal;
   color: var(--green);
-  white-space: nowrap;   /* keep "do-it-all" from breaking at its hyphens */
+  white-space: nowrap;   /* keep "do-it-all" on one line */
 }
 
 h2 {
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(1.55rem, 1.15rem + 1.5vw, 2.15rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -197,6 +202,20 @@ p { margin: 0; }
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--green-deep);
+}
+
+/* The hero eyebrow carries the same tick every band label does. */
+.hero .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.hero .eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  background: var(--green);
+  flex: none;
 }
 
 /* ── buttons ─────────────────────────────────────────────── */
@@ -331,7 +350,7 @@ p { margin: 0; }
     margin-inline: calc(var(--pad) * -1);
     padding-inline: var(--pad);
     scrollbar-width: none;
-    /* Fade the right edge so the strip reads as scrollable — the hidden
+    /* Fade the right edge so the strip reads as scrollable; the hidden
        scrollbar otherwise gives no hint that Setup is off-screen. */
     -webkit-mask-image: linear-gradient(to right, #000 84%, transparent 100%);
             mask-image: linear-gradient(to right, #000 84%, transparent 100%);
@@ -352,7 +371,7 @@ p { margin: 0; }
 .hero {
   padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(3.5rem, 6vw, 6rem);
   border-bottom: 1.5px solid var(--ink-rule);
-  /* Faint engineering grid on manila — graph paper from a technical manual,
+  /* Faint engineering grid on manila: graph paper from a technical manual,
      not a SaaS gradient glow. */
   background:
     repeating-linear-gradient(to right, rgba(35, 32, 26, 0.045) 0 1px, transparent 1px 34px),
@@ -528,19 +547,76 @@ p { margin: 0; }
   border-radius: var(--radius);
 }
 
-/* staggered reveal, set up by app.js only when motion is welcome */
+/* Staged reveal: app.js adds .is-staged only when motion is welcome and the
+   script is actually running, so the conversation is complete without it. */
 .chat-log.is-staged .msg { opacity: 0; }
 .chat-log.is-staged .msg.is-in {
   opacity: 1;
-  animation: msgIn 0.3s ease-out both;
+  animation: msgIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 @keyframes msgIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(7px); }
   to   { opacity: 1; transform: none; }
+}
+
+/* .msg-body is the anchor; the reply's text <p> is the box. While .is-typing, the
+   subtree is hidden (the box stays the same) and the dots overlay the
+   text area below msg-h, so the row's height matches the final reply and
+   the panel never resizes between the typing beat and the reply.
+
+   We use opacity instead of color: transparent so children with their own
+   color (refs, ems, bs) get hidden too. color: transparent inherits, but
+   a child's explicit color wins, which would leave highlighted spans
+   visible during the typing beat. */
+.msg-body { position: relative; }
+.msg-body > p:not(.msg-h) {
+  transition: opacity 0.28s ease;
+}
+.msg.is-typing .msg-body > p:not(.msg-h) {
+  opacity: 0;
+  /* Snap out of view so the text doesn't visibly fade away; we want the
+     reply to fade IN, not the text to fade OUT and then back in. */
+  transition: none;
+}
+
+/* The typing dots overlay the reply's text area. Absolute + inset:0 keeps
+   the row's height determined by the (still-present, hidden) text, not
+   the dots themselves. padding-top skips past msg-h so the dots land in
+   the area where the reply text will be. */
+.typing-dots {
+  position: absolute;
+  inset: 0;
+  padding-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+.msg.is-typing .typing-dots {
+  opacity: 1;
+  /* Snap the dots on the moment typing starts, so the arriving row is
+     already mid-typing rather than fading the dots up after the fact. */
+  transition: opacity 0s;
+}
+.typing-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  animation: tdot 0.9s ease-in-out infinite;
+}
+.typing-dots i:nth-child(2) { animation-delay: 0.15s; }
+.typing-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes tdot {
+  0%, 60%, 100% { opacity: 0.25; }
+  30%           { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .chat-log.is-staged .msg { opacity: 1; animation: none; }
+  .typing-dots i { animation: none; }
 }
 
 @media (max-width: 980px) {
@@ -799,7 +875,7 @@ p { margin: 0; }
 
 /* Terminal transcript: what `baxter shell` actually looks like. Same dark
    surface as the code blocks, but a conversation rather than a command to
-   copy — so it's a plain block (no copy button) with prompt-coloured speakers.
+   copy, so it's a plain block (no copy button) with prompt-coloured speakers.
    green = Baxter, teal = you, echoing the palette's roles. */
 .term {
   padding: 1rem 1.1rem;
